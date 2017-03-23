@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Task4
 
@@ -153,12 +155,30 @@ namespace Task4
                     Console.WriteLine($"{y.Media}: {y.Title} mit Tonalität {y.Tonality}");
                 }
 
+                
+                Console.WriteLine(JsonConvert.SerializeObject(mentioned, Formatting.Indented));
+
+                var settings = new JsonSerializerSettings() { Formatting = Formatting.Indented, TypeNameHandling = TypeNameHandling.Auto };
+                Console.WriteLine(JsonConvert.SerializeObject(mentioned, settings));
+
+                var text = JsonConvert.SerializeObject(mentioned, settings);
+                var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                var filename = Path.Combine(desktop, "mentioned.json");
+                File.WriteAllText(filename, text);
+                
+                var textFromFile = File.ReadAllText(filename);
+                var itemsFromFile = JsonConvert.DeserializeObject<BaseData[]>(textFromFile, settings);
+                foreach (var y in itemsFromFile)
+                {
+                    Console.WriteLine($"{y.Media}: {y.Title} mit Tonalität {y.Tonality}");
+                }
+
             }
             catch (Exception e)
             {
                 Console.WriteLine("Fehler! " + e.Message);
                 return;
-            }
-        }
+            }            
+        }        
     }
 }
